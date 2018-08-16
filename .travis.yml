@@ -1,0 +1,40 @@
+language: julia
+os:
+  - linux
+julia:
+  - 0.6
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryProvider.jl")'
+  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for juan-pablo-vielma/SCSBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: eSekS8Adn2xDRzelYuqT5OyJcfd2gB5Dn63EEZ6Xk++wG03AicXppx9Q27tb/2KrzsGiMPnRLRjrwUHpgtu6y0AWqeTOShK2c4qZAYoxVmDbBx7NN2aK4s7cNFfL7VzpcOqaYCjmvsE1VcBoMKwjMRFsrmzo7yt2iZA4Qf29yJhi+kC++TdPAXlWXWaw1WMMFJb63WhJQDGvVg8z/eKSk1CFYh4FB6hxmTN8+TGm6lqobDkppPsIJPanXrftJC4AF56TvAi8nuXb3klqcFjFYZNRx7oN8ipx3C8Qivh1O/7m+Ybk/EgRidMF6PNw3Qg4LjLnrq7rDqccOogZccE2f7qd4Fim7iNBtFGErzBwdRc4UZzdOtATfsSbY3gDKCQSuCVLyW7cfV+D01iAvyajpFhBfqj/We75j8Iw7ANRAYsF69O7GDJyR79EPVLSJ23QEOtEYzDckOenv2/iR6uP5+5+EhOw0pFLGjLCwigfWfip1tcsgiv/wNzs+qQXnPhs5eWoUix2ThrmHouYt5rxtgK+SQN5OhWtoKmlNPvlVuGfar3tronb9TGL9C+qvgJgrKkLRwz/Mcod86xW2UvrzLNTQRdb4esdlkvdVJrntBzgMHzBTYto+JyNLRjFIiU2jCSK9f9Q9IJg+vxMYxvOCxeHjjkeWvARhqYx47or780=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: juan-pablo-vielma/SCSBuilder
+        tags: true
