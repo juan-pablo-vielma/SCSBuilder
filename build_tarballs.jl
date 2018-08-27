@@ -2,6 +2,9 @@
 # `julia build_tarballs.jl --help` to see a usage message.
 using BinaryBuilder
 
+name = "GLPKBuilder"
+version = v"2.0.2"
+
 # Collection of sources required to build SCSBuilder
 sources = [
     "https://github.com/cvxgrp/scs/archive/v2.0.2.tar.gz" =>
@@ -56,5 +59,5 @@ dependencies = [
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
-build_tarballs(ARGS, "SCSBuilder", sources, script, platforms, products, dependencies)
+build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies)
 
