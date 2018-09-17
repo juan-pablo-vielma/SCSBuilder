@@ -12,11 +12,12 @@ sources = [
 
 ]
 
-# Bash recipe for building across all platforms
+# Adapted from builder by kalmarek (https://github.com/JuliaPackaging/BinaryBuilder.jl/issues/313)
+# Bash recipe for building across all platforms 
 script = raw"""
 cd $WORKSPACE/srcdir
 cd scs-2.0.2/
-if [ $target = "x86_64-w64-mingw32" ] || [ $target = "i686-w64-mingw32" ]; then
+if [ $target = "x86_64-apple-darwin14" ] || [ $target = "x86_64-w64-mingw32" ] || [ $target = "i686-w64-mingw32" ]; then
     flags="DLONG=1"
 else
     flags="DLONG=1 USE_OPENMP=1"
