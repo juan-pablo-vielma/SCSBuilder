@@ -24,8 +24,7 @@ cd scs-2.0.2/
 #    flags="DLONG=1 USE_OPENMP=1"
 #fi
 # GOMP 4.0 would be required for OPENMP, which makes travis fail because it only has gcc version 4.8.4 
-USE_OPENMP=0
-DLONG=1 
+flags="DLONG=1 USE_OPENMP=0"
 if [ $target = "x86_64-apple-darwin14" ]; then 
     install_name_tool -id libopenblas64_.dylib ${prefix}/lib/libopenblas64_.0.3.0.dev.dylib
 fi
