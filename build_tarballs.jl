@@ -25,9 +25,9 @@ cd scs-2.0.2/
 #fi
 # GOMP 4.0 would be required for OPENMP, which makes travis fail because it only has gcc version 4.8.4 
 flags="DLONG=1 USE_OPENMP=0"
-if [ $target = "x86_64-apple-darwin14" ]; then 
-    install_name_tool -id libopenblas64_.dylib ${prefix}/lib/libopenblas64_.0.3.0.dev.dylib
-fi
+#if [ $target = "x86_64-apple-darwin14" ]; then 
+#    install_name_tool -id libopenblas64_.dylib ${prefix}/lib/libopenblas64_.0.3.0.dev.dylib
+#fi
 blasldflags="-L${prefix}/lib"
 if [[ ${nbits} == 32 ]]; then     blasldflags="${blasldflags} -lopenblas"; else     flags="${flags} BLAS64=1 BLASSUFFIX=_64_";     blasldflags="${blasldflags} -lopenblas64_"; fi
 make BLASLDFLAGS="${blasldflags}" ${flags} out/libscsdir.${dlext}
@@ -63,7 +63,7 @@ products(prefix) = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    "https://github.com/JuliaLinearAlgebra/OpenBLASBuilder/releases/download/v0.3.0-1/build_OpenBLAS.v0.3.0.jl"
+    "https://github.com/JuliaLinearAlgebra/OpenBLASBuilder/releases/download/v0.3.0-3/build_OpenBLAS.v0.3.0.jl"
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
