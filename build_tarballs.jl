@@ -3,33 +3,27 @@
 using BinaryBuilder
 
 name = "SCSBuilder"
-version = v"2.0.2"
+version = v"2.1.1"
 
 # Collection of sources required to build SCSBuilder
 sources = [
-    "https://github.com/cvxgrp/scs/archive/v2.0.2.tar.gz" =>
-    "8725291dfe952a1f117f1f725906843db392fe8d29eebd8feb14b49f25fc669e",
+    "https://github.com/cvxgrp/scs/archive/$(version).tar.gz" =>
+    "0e20b91e8caf744b84aa985ba4e98cc7235ee33612b2bad2bf31ea5ad4e07d93",
 
 ]
 
-# Adapted from builder by kalmarek (https://github.com/JuliaPackaging/BinaryBuilder.jl/issues/313)
-# Bash recipe for building across all platforms 
+# Bash recipe for building across all platforms
 script = raw"""
-cd $WORKSPACE/srcdir
-cd scs-2.0.2/
-# Mac OS and Windows do not have openmp by default
-#if [ $target = "x86_64-apple-darwin14" ] || [ $target = "x86_64-w64-mingw32" ] || [ $target = "i686-w64-mingw32" ]; then
-#    flags="DLONG=1"
-#else
-#    flags="DLONG=1 USE_OPENMP=1"
-#fi
-# GOMP 4.0 would be required for OPENMP, which makes travis fail because it only has gcc version 4.8.4 
+cd $WORKSPACE/srcdir/scs-*
 flags="DLONG=1 USE_OPENMP=0"
-#if [ $target = "x86_64-apple-darwin14" ]; then 
-#    install_name_tool -id libopenblas64_.dylib ${prefix}/lib/libopenblas64_.0.3.0.dev.dylib
-#fi
 blasldflags="-L${prefix}/lib"
-if [[ ${nbits} == 32 ]]; then     blasldflags="${blasldflags} -lopenblas"; else     flags="${flags} BLAS64=1 BLASSUFFIX=_64_";     blasldflags="${blasldflags} -lopenblas64_"; fi
+# see https://github.com/JuliaPackaging/Yggdrasil/blob/0bc1abd56fa176e3d2cc2e48e7bf85a26c948c40/OpenBLAS/build_tarballs.jl#L23
+if [[ ${nbits} == 64 ]] && [[ ${target} != aarch64* ]]; then
+    flags="${flags} BLAS64=1 BLASSUFFIX=_64_"
+    blasldflags+=" -lopenblas64_"
+else
+    blasldflags+=" -lopenblas"
+fi
 make BLASLDFLAGS="${blasldflags}" ${flags} out/libscsdir.${dlext}
 make BLASLDFLAGS="${blasldflags}" ${flags} out/libscsindir.${dlext}
 mv out/libscs* ${prefix}/lib/
@@ -40,8 +34,8 @@ mv out/libscs* ${prefix}/lib/
 # Eventually, this should be fixed upstream
 if [[ ${target} == "x86_64-apple-darwin14" ]]; then
     echo "-- Modifying library name for OpenBLAS"
-    install_name_tool -change libopenblas64_.0.3.0.dev.dylib libopenblas64_.dylib ${prefix}/lib/libscsindir.dylib
-    install_name_tool -change libopenblas64_.0.3.0.dev.dylib libopenblas64_.dylib ${prefix}/lib/libscsdir.dylib
+    install_name_tool -change libopenblas64_.0.3.5.dev.dylib libopenblas64_.dylib ${prefix}/lib/libscsindir.dylib
+    install_name_tool -change libopenblas64_.0.3.5.dev.dylib libopenblas64_.dylib ${prefix}/lib/libscsdir.dylib
 fi
 """
 
@@ -72,9 +66,8 @@ products(prefix) = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    "https://github.com/JuliaLinearAlgebra/OpenBLASBuilder/releases/download/v0.3.0-3/build_OpenBLAS.v0.3.0.jl"
+    "https://github.com/JuliaPackaging/Yggdrasil/releases/download/OpenBLAS-v0.3.5-2/build_OpenBLAS.v0.3.5.jl"
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
 build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies)
-
