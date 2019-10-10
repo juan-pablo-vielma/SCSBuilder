@@ -18,13 +18,13 @@ cd $WORKSPACE/srcdir/scs-*
 flags="DLONG=1 USE_OPENMP=0"
 blasldflags="-L${prefix}/lib"
 # see https://github.com/JuliaPackaging/Yggdrasil/blob/0bc1abd56fa176e3d2cc2e48e7bf85a26c948c40/OpenBLAS/build_tarballs.jl#L23
-#if [[ ${nbits} == 64 ]] && [[ ${target} != aarch64* ]]; then
-#    flags="${flags} BLAS64=1 BLASSUFFIX=_64_"
-#    blasldflags+=" -lopenblas64_"
-#else
-#    blasldflags+=" -lopenblas"
-#fi
-if [[ ${nbits} == 32 ]]; then     blasldflags="${blasldflags} -lopenblas"; else     flags="${flags} BLAS64=1 BLASSUFFIX=_64_";     blasldflags="${blasldflags} -lopenblas64_"; fi
+if [[ ${nbits} == 64 ]] && [[ ${target} != aarch64* ]]; then
+    flags="${flags} BLAS64=1 BLASSUFFIX=_64_"
+    blasldflags+=" -lopenblas64_"
+else
+    blasldflags+=" -lopenblas"
+fi
+
 make BLASLDFLAGS="${blasldflags}" ${flags} out/libscsdir.${dlext}
 make BLASLDFLAGS="${blasldflags}" ${flags} out/libscsindir.${dlext}
 mv out/libscs* ${prefix}/lib/
