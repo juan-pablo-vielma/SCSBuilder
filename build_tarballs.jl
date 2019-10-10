@@ -34,8 +34,8 @@ mv out/libscs* ${prefix}/lib/
 # Eventually, this should be fixed upstream
 if [[ ${target} == "x86_64-apple-darwin14" ]]; then
     echo "-- Modifying library name for OpenBLAS"
-    install_name_tool -change libopenblas64_.0.3.5.dylib libopenblas64_.dylib ${prefix}/lib/libscsindir.dylib
-    install_name_tool -change libopenblas64_.0.3.5.dylib libopenblas64_.dylib ${prefix}/lib/libscsdir.dylib
+    install_name_tool -change @rpath/libopenblas64_.0.3.5.dylib @rpath/libopenblas64_.dylib ${prefix}/lib/libscsindir.dylib
+    install_name_tool -change @rpath/libopenblas64_.0.3.5.dylib @rpath/libopenblas64_.dylib ${prefix}/lib/libscsdir.dylib
 fi
 """
 
