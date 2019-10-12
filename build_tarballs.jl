@@ -25,6 +25,27 @@ else
     blasldflags+=" -lopenblas"
 fi
 
+# Patch to reverse this WIN64 change: https://github.com/cvxgrp/scs/commit/9858d6b562f499de75493b85286276c19ad84c6f#diff-a9dbab3214616022c64ee2656440f544
+# Looks like it is known that this change causes trouble witn mingw32 (but not for mingw64?):
+# https://github.com/cvxgrp/scs/blob/e6ab81db115bb37502de0a9917041a0bc2ded313/.appveyor.yml#L13-L16
+cd include
+cp glbopts.h glbopts.h.orig
+cat > file.patch <<'END'
+--- glbopts.h.orig
++++ glbopts.h
+@@ -97,7 +97,7 @@
+ #ifdef _WIN64
+ /* #include <stdint.h> */
+ /* typedef int64_t scs_int; */
+-typedef long scs_int;
++typedef __int64 scs_int;
+ #else
+ typedef long scs_int;
+ #endif
+END
+patch -l glbopts.h.orig file.patch -o glbopts.h
+cd ..
+
 make BLASLDFLAGS="${blasldflags}" ${flags} out/libscsdir.${dlext}
 make BLASLDFLAGS="${blasldflags}" ${flags} out/libscsindir.${dlext}
 mv out/libscs* ${prefix}/lib/
